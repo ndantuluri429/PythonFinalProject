@@ -1,0 +1,29 @@
+import pandas as pd                 # for data analysis
+import matplotlib.pyplot as plt     # for data visualization
+
+# Load the data again
+data = pd.read_excel("/Users/nehadantuluri/Downloads/HRSA_Health_Centers.xlsx", engine='openpyxl')
+
+# Create the DataQuery class again
+class DataQuery:
+    def __init__(self, data):
+        self.data = data
+
+    def query_data(self, column, label):
+        queried_data = self.data[self.data[column] == label]
+        return queried_data
+
+# Query the data for 'Mobile Van'
+dq = DataQuery(data)
+queried_data = dq.query_data('Health Center Location Type Description', 'Mobile Van')
+
+# Count the number of 'Mobile Van' per state
+state_counts = queried_data['Health Center Organization State'].value_counts()
+
+# Create a histogram (bar chart) of the counts
+plt.figure(figsize=(10, 6))
+state_counts.plot(kind='bar')
+plt.title('Number of Federally Funded Mobile Vans per State')
+plt.xlabel('State')
+plt.ylabel('Number of Mobile Vans')
+plt.show()
