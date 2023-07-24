@@ -1,0 +1,20 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Read Medicaid dataset
+data = pd.read_csv("/Users/nehadantuluri/Downloads/Medicaid_Jan.csv")
+
+# Calculate Medicaid enrollment per state
+state_totals = data.groupby('state_abbreviation')['total_medicaid_enrollment'].sum()
+
+# Remove scientific notation in y axis
+state_totals_thousands = state_totals / 1000
+
+# Histogram
+plt.figure(figsize=(10, 6))
+state_totals_thousands.plot(kind='bar')
+plt.title('Total Medicaid Enrollment per State (January 2023)')
+plt.xlabel('State')
+plt.ylabel('Total Medicaid Enrollment (in thousands)')
+plt.show()
+
