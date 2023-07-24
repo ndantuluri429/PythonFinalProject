@@ -1,0 +1,27 @@
+import pandas as pd             # for data analysis
+
+def load_data(filepath):
+    # Loading the data from Excel file
+    data = pd.read_excel(filepath, engine='openpyxl')
+    return data
+
+# Class definition
+class DataQuery:
+    def __init__(self, data):
+        self.data = data
+
+    def query_data(self, column, label):
+        # Querying the data
+        queried_data = self.data[self.data[column] == label]
+        return queried_data
+
+filepath = "/Users/nehadantuluri/Downloads/HRSA_Health_Centers.xlsx"
+data = load_data(filepath)
+
+dq = DataQuery(data)
+
+# only query instances of Mobile Vans
+queried_data = dq.query_data('Site Name', 'Mobile Van')
+
+
+
