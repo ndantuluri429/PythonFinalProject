@@ -1,0 +1,62 @@
+import pandas as pd
+from matplotlib import pyplot as plt
+
+# USING 2 DATASETS TO SEE CORRELATION VIA A DUAL AXIS PLOT
+
+# merging both datasets to see correlation between them
+from HRSA_Histograms import DataQuery
+
+# Read HRSA dataset
+data_HRSA = pd.read_excel("/Users/nehadantuluri/Downloads/HRSA_Health_Centers.xlsx", engine='openpyxl')
+
+# Query the data specified as "Mobile Van"
+dq = DataQuery(data_HRSA)
+queried_data_HRSA = dq.query_data('Health Center Location Type Description', 'Mobile Van')
+
+# Count number of "Mobile Van" queries per state
+mobile_van_counts = queried_data_HRSA['Health Center Organization State'].value_counts()
+
+# Read Medicaid_Jan dataset
+data_Medicaid = pd.read_csv("/Users/nehadantuluri/Downloads/Medicaid_Jan.csv")
+
+# Medicaid enrollment per state
+state_totals = data_Medicaid.groupby('state_abbreviation')['total_medicaid_enrollment'].sum()
+
+# DataFrame to hold queried data: Mobile Vans (per state) & Medicaid totals (per state)
+data_merged = pd.DataFrame({
+    'Mobile Van Count': mobile_van_counts,
+    'Total Medicaid Enrollment': state_totals / 1000
+})
+
+
+# CREATING A DUAL AXIS PLOT
+
+# Any rows with no data or NA are not included
+data_merged = data_merged.dropna()
+
+# Sort data by Medicaid enrollment
+data_merged_sorted = data_merged.sort_values(by='Total Medicaid Enrollment')
+
+fig, ax1 = plt.subplots(figsize=(10, 6))
+
+# Bar plot for total Medicaid enrollment
+ax1.bar(data_merged_sorted.index, data_merged_sorted['Total Medicaid Enrollment'], color='blue', alpha=0.6, label='Total Medicaid Enrollment')
+
+# Create a second y-axis for number of Mobile Van
+ax2 = ax1.twinx()
+ax2.plot(data_merged_sorted.index, data_merged_sorted['Mobile Van Count'], color='red', label='Number of Mobile Health Clinics')
+
+# Set the x-axis label
+ax1.set_xlabel('State')
+
+# Set the y-axis label
+ax1.set_ylabel('Total Medicaid Enrollment', color='blue')
+ax2.set_ylabel('Number of Mobile Health Clinics', color='red')
+
+# Plot Title
+plt.title('Total Medicaid Enrollment and Number of Mobile Health Clinics per State')
+
+# Plot legend/key
+fig.legend(loc="upper right", bbox_to_anchor=(1,1), bbox_transform=ax1.transAxes)
+
+plt.show()
